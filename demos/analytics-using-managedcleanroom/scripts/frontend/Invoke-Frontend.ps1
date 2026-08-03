@@ -115,3 +115,37 @@ function Invoke-Frontend {
 
     return Invoke-RestMethod @params
 }
+
+function Resolve-CollaborationId {
+    <#
+    .SYNOPSIS
+        Resolves a frontend collaboration UUID by id, name, or first-visible.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][pscustomobject]$Context,
+        [string]$CollaborationId,
+        [string]$CollaborationName
+    )
+
+    if ($CollaborationId) { return $CollaborationId }
+
+    if ($Context.DryRun) {
+        Invoke-Frontend -Context $Context -Path "" -Method GET | Out-Null
+        return "<collaboration-id>"
+    }
+
+    $collabs = (Invoke-Frontend -Context $Context -Path "" -Method GET).collaborations
+    if (-not $collabs) { throw "No collaborations visible to persona '$($Context.Persona)'." }
+
+    if ($CollaborationName) {
+        $match = $collabs | Where-Object { $_.collaborationName -eq $CollaborationName }
+        if (-not $match) { throw "No collaboration named '$CollaborationName' visible to '$($Context.Persona)'." }
+        return @($match)[0].collaborationId
+    }
+
+    if (@($collabs).Count -gt 1) {
+        Write-Warning "Multiple collaborations visible; using the first. Pass -CollaborationName or -CollaborationId to disambiguate."
+    }
+    return @($collabs)[0].collaborationId
+}

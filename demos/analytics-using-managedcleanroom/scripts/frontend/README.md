@@ -39,6 +39,7 @@ operations, not resource provisioning. See `../../README-API.md` Appendix F.
 | Script | Step | Runs as |
 |--------|------|---------|
 | `Invoke-Frontend.ps1` | — | shared helper (dot-sourced) |
+| `run-collaborator.ps1` | 03 + 06 + 08 | EACH collaborator (orchestrator) |
 | `03-accept-invitation.ps1` | 03 | EACH collaborator |
 | `05-fetch-jwks.ps1` | 5.1 | EACH collaborator |
 | `05-set-issuer-url.ps1` | 5.3 | EACH collaborator |
@@ -54,7 +55,27 @@ operations, not resource provisioning. See `../../README-API.md` Appendix F.
 > (`getReadonlyKubeConfig`), so it uses `az rest` against ARM and takes the
 > resource group + collaboration name, not the frontend context.
 
-## Per-persona runbook
+## Quick start — collaborator orchestrator
+
+When the query is **already published** by the owner, a collaborator can join and
+approve in one command with `run-collaborator.ps1` (chains 03 → optional 06 → 08):
+
+```powershell
+cd scripts/frontend
+# Northwind: accept invite + vote on an already-published query
+./run-collaborator.ps1 -Persona northwind -QueryName query1-v1
+
+# Also publish a dataset before voting
+./run-collaborator.ps1 -Persona northwind -QueryName query2-v1 `
+    -DatasetDocumentId northwind-input-csv-v1 `
+    -DatasetBodyFile generated/publish/northwind-input-dataset.json
+```
+
+It resolves the collaboration (by `-CollaborationId`, `-CollaborationName`, or the
+first visible one), tolerates an already-accepted invite, and forwards `-DryRun`.
+Resource provisioning + OIDC (Steps 04–05) are prerequisites and are not run here.
+
+## Per-persona runbook (individual steps)
 
 Set common variables in each collaborator's terminal:
 
