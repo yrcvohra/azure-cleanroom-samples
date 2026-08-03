@@ -1,16 +1,24 @@
-# Fast setup — what each persona runs
+# Big Data Analytics — Fast Setup Scripts (alternate scripting solution)
 
-This guide shows the **minimum uber-level commands** each persona runs to stand up
-a managed clean-room analytics collaboration. The goal: after these steps, the
+This guide is an **alternate, scripting-first path**: opinionated PowerShell
+orchestrators that give each persona the **minimum uber-level commands** to stand
+up a managed clean-room analytics collaboration. The goal: after these steps, the
 **only** remaining action is running queries — and that is scripted too.
+
+For the step-by-step variants of the same scenario, see
+[README-API.md](../README-API.md) (REST via `Invoke-RestMethod` + `az rest`) and
+[README-CLI.md](../README-CLI.md) (`az managedcleanroom`). This doc wraps those same
+operations into per-persona orchestrators.
 
 - **Owner** = Woodgrove (creates the collaboration, publishes + runs queries)
 - **Collaborator** = Northwind (joins, contributes data, approves queries)
 
 All paths are relative to `demos/analytics-using-managedcleanroom/`.
 
+---
+
 > Prerequisites: Azure CLI 2.75+, PowerShell 7+, `az login` per persona, and the
-> quota noted in [README-API.md](README-API.md) Step 1.1. Acquire a per-persona
+> quota noted in [README-API.md](../README-API.md) Step 1.1. Acquire a per-persona
 > frontend token first (README Step 1.5) or set `$env:CLEANROOM_FRONTEND_TOKEN`.
 
 ---
@@ -19,7 +27,7 @@ All paths are relative to `demos/analytics-using-managedcleanroom/`.
 
 ```powershell
 # Deploy collaboration + enable Analytics workload + invite Northwind (one command)
-./bicep/deploy-managed-cleanroom.ps1 `
+./scripts/bicep/deploy-managed-cleanroom.ps1 `
     -resourceGroup cr-collab-rg -collaborationName collab1 `
     -ownerIdentifier woodgrove@contoso.com `
     -resourceLocation westus `
@@ -27,7 +35,7 @@ All paths are relative to `demos/analytics-using-managedcleanroom/`.
 ```
 
 This is Bicep (declarative collaboration resource) + the ARM *action* steps
-(`enableWorkload`, `addCollaborator`). Runtime ~35 min. See [bicep/](bicep/).
+(`enableWorkload`, `addCollaborator`). Runtime ~35 min. See [scripts/bicep/](bicep/).
 
 ---
 
@@ -73,7 +81,7 @@ If already onboarded and the query is published, this is literally:
 ./scripts/frontend/run-collaborator.ps1 -Persona northwind -QueryName query1-v1
 ```
 
-See [scripts/frontend/run-collaborator.ps1](scripts/frontend/run-collaborator.ps1).
+See [scripts/frontend/run-collaborator.ps1](frontend/run-collaborator.ps1).
 
 ---
 
@@ -116,7 +124,7 @@ Re-run any time by repeating Phase 5 — no re-setup needed.
 
 | Persona | Phase | Uber command |
 |---------|-------|--------------|
-| Owner | 1 Create | `./bicep/deploy-managed-cleanroom.ps1 ...` |
+| Owner | 1 Create | `./scripts/bicep/deploy-managed-cleanroom.ps1 ...` |
 | Both  | 2 Provision + OIDC | `04-prepare-resources` → OIDC helpers |
 | Collaborator | 3 Join + approve | `./scripts/frontend/run-collaborator.ps1 -Persona <p> -QueryName <q>` |
 | Owner | 4 Publish query | `./scripts/frontend/run-query.ps1 -Persona woodgrove -QueryName <q> -BodyFile <f> -SkipMonitor -SkipResults` |

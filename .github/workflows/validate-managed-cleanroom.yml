@@ -6,13 +6,11 @@ name: validate-managed-cleanroom
 on:
   push:
     paths:
-      - 'demos/analytics-using-managedcleanroom/bicep/**'
-      - 'demos/analytics-using-managedcleanroom/scripts/frontend/**'
+      - 'demos/analytics-using-managedcleanroom/scripts/**'
       - '.github/workflows/validate-managed-cleanroom.yml'
   pull_request:
     paths:
-      - 'demos/analytics-using-managedcleanroom/bicep/**'
-      - 'demos/analytics-using-managedcleanroom/scripts/frontend/**'
+      - 'demos/analytics-using-managedcleanroom/scripts/**'
       - '.github/workflows/validate-managed-cleanroom.yml'
   workflow_dispatch:
 
@@ -33,15 +31,15 @@ jobs:
       - name: Bicep build + lint
         run: |
           az bicep install
-          az bicep build --file "$env:DEMO/bicep/managed-cleanroom.bicep"
-          az bicep lint  --file "$env:DEMO/bicep/managed-cleanroom.bicep"
-          Remove-Item "$env:DEMO/bicep/managed-cleanroom.json" -ErrorAction SilentlyContinue
+          az bicep build --file "$env:DEMO/scripts/bicep/managed-cleanroom.bicep"
+          az bicep lint  --file "$env:DEMO/scripts/bicep/managed-cleanroom.bicep"
+          Remove-Item "$env:DEMO/scripts/bicep/managed-cleanroom.json" -ErrorAction SilentlyContinue
           Write-Host "Bicep OK"
 
       - name: PowerShell syntax (AST parse)
         run: |
           $failed = 0
-          Get-ChildItem "$env:DEMO/scripts/frontend","$env:DEMO/bicep" -Filter *.ps1 -Recurse | ForEach-Object {
+          Get-ChildItem "$env:DEMO/scripts" -Filter *.ps1 -Recurse | ForEach-Object {
             $t = $null; $e = $null
             [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$t, [ref]$e) | Out-Null
             if ($e.Count) {
@@ -58,7 +56,7 @@ jobs:
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
-          $results = Invoke-ScriptAnalyzer -Path "$env:DEMO/scripts/frontend","$env:DEMO/bicep" -Recurse -Severity Warning,Error
+          $results = Invoke-ScriptAnalyzer -Path "$env:DEMO/scripts" -Recurse -Severity Warning,Error
           if ($results) {
             $results | Format-Table RuleName, Severity, ScriptName, Line -AutoSize
             $errors = @($results | Where-Object Severity -eq 'Error')

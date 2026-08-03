@@ -3,13 +3,13 @@
 These scripts wrap the **frontend REST API** calls that README-API.md
 (`../../README-API.md`) shows inline for Steps 03–12. They complement the
 existing resource-provisioning helpers in `../` and the Bicep control-plane
-deployment in `../../bicep/`.
+deployment in `../bicep/`.
 
 ## Where this fits
 
 | Phase | Surface | Tooling |
 |-------|---------|---------|
-| Create collaboration, enable workload, add collaborator (Steps 02) | ARM control plane (`management.azure.com`, `2026-04-30-preview`) | `../../bicep/managed-cleanroom.bicep` + `../../bicep/deploy-managed-cleanroom.ps1` |
+| Create collaboration, enable workload, add collaborator (Steps 02) | ARM control plane (`management.azure.com`, `2026-04-30-preview`) | `../bicep/managed-cleanroom.bicep` + `../bicep/deploy-managed-cleanroom.ps1` |
 | Provision storage/KV/MI, OIDC storage, data upload (Steps 04–06 helpers) | ARM + storage | `../04-*`, `../05-*`, `../06-*`, `../07-*`, `../08-*`, `../09-*` |
 | **Accept, publish, approve, run, monitor, results (Steps 03–12 REST)** | **Frontend / dataplane** (`...cleanroom.cloudapp.azure.net`, `2026-03-01-preview`) | **the scripts in this folder** |
 
