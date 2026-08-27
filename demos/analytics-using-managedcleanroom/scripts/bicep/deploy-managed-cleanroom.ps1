@@ -81,7 +81,7 @@ $subscription = (az account show -o json | ConvertFrom-Json).id
 $collabArmUrl = "$armEndpoint/subscriptions/$subscription/resourceGroups/$resourceGroup/providers/Microsoft.CleanRoom/Collaborations/$collaborationName"
 
 function Get-Collab {
-    az rest --method GET --url "$collabArmUrl?api-version=$apiVersion" --resource $armEndpoint -o json 2>$null | ConvertFrom-Json
+    az rest --method GET --url "${collabArmUrl}?api-version=$apiVersion" --resource $armEndpoint -o json 2>$null | ConvertFrom-Json
 }
 
 # Polls a condition until it returns truthy or the timeout elapses.
@@ -130,7 +130,7 @@ $existing = Get-Collab
 if ($existing -and $existing.id) {
     if ($DeleteExistingCollab) {
         Write-Host "Deleting existing collaboration '$collaborationName'..."
-        az rest --method DELETE --url "$collabArmUrl?api-version=$apiVersion" --resource $armEndpoint -o none
+        az rest --method DELETE --url "${collabArmUrl}?api-version=$apiVersion" --resource $armEndpoint -o none
         Wait-Until -Description "existing '$collaborationName' to be deleted" -TimeoutMinutes 30 -Condition { -not (Get-Collab) }
         Write-Host "Existing collaboration deleted."
     }
