@@ -4,7 +4,7 @@
     ARM *action* steps that Bicep cannot express (enableWorkload, addCollaborator).
 
 .DESCRIPTION
-    Run by: the collaboration owner.
+    Run by: Collaboration owner (Woodgrove).
 
     Bicep is declarative and can only create the collaboration *resource*
     (control-plane PUT). The managed clean-room flow also requires imperative
@@ -14,10 +14,8 @@
         2. enableWorkload (POST)   -> enables the Analytics workload
         3. addCollaborator (POST)  -> (optional) invite additional collaborators
 
-    The owner is taken from the caller's ARM token automatically -- there is no
-    owner parameter. Everything after this (accept invitation, OIDC, publish
-    datasets/queries, vote, run) is dataplane/frontend REST -- follow
-    README-API.md Steps 03-12.
+    Everything after this (accept invitation, OIDC, publish datasets/queries,
+    vote, run) is dataplane/frontend REST -- follow README-API.md Steps 03-12.
 
     This mirrors README-API.md Steps 02.2 - 02.4 and Appendix F (ARM API).
 
