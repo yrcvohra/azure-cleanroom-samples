@@ -35,8 +35,8 @@
 @description('Name of the collaboration resource.')
 param collaborationName string
 
-@description('ARM RP location for the collaboration control-plane resource (e.g. westus). This is NOT where clean-room infra is deployed.')
-param rpLocation string = resourceGroup().location
+@description('ARM location for the collaboration control-plane resource (e.g. westus). This is NOT where clean-room infra is deployed.')
+param location string = resourceGroup().location
 
 @description('Region where the clean-room infrastructure (CCF network, AKS, confidential ACI) is provisioned. Must be a supported resourceLocation.')
 @allowed([
@@ -58,7 +58,7 @@ param rpLocation string = resourceGroup().location
 ])
 param resourceLocation string = 'westus'
 
-@description('Initial collaborators added at creation time. Each entry is { userIdentifier: "<email-or-appId>" }. The owner is typically added here. Add further collaborators later via the addCollaborator action (see deploy script).')
+@description('Optional additional collaborators added at creation time. Each entry is { userIdentifier: "<email-or-appId>" }. The owner is derived from the caller token automatically. Add further collaborators later via the addCollaborator action (see deploy script).')
 param collaborators array = []
 
 // -----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ param collaborators array = []
 #disable-next-line BCP081
 resource collaboration 'Microsoft.CleanRoom/collaborations@2026-04-30-preview' = {
   name: collaborationName
-  location: rpLocation
+  location: location
   properties: {
     resourceLocation: resourceLocation
     collaborators: collaborators

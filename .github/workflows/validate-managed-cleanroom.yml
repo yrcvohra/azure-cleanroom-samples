@@ -4,10 +4,6 @@ name: validate-managed-cleanroom
 # No Azure login, no resources, no cost. Runs Tier-1 checks + dry-run smoke.
 
 on:
-  push:
-    paths:
-      - 'demos/analytics-using-managedcleanroom/scripts/**'
-      - '.github/workflows/validate-managed-cleanroom.yml'
   pull_request:
     paths:
       - 'demos/analytics-using-managedcleanroom/scripts/**'
