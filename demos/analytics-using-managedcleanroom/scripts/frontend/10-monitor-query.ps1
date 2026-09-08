@@ -37,15 +37,10 @@ param(
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/Invoke-Frontend.ps1"
 
-$ctxParams = @{ Persona = $Persona }
-if ($Frontend) { $ctxParams.Frontend = $Frontend }
-if ($TokenFile) { $ctxParams.TokenFile = $TokenFile }
-if ($DryRun) { $ctxParams.DryRun = $true }
-$fe = Get-FrontendContext @ctxParams
+$fe = Get-FrontendContext -Persona $Persona -Frontend $Frontend -TokenFile $TokenFile -DryRun:$DryRun
 
 if ($DryRun) {
-    Invoke-Frontend -Context $fe -Path "$CollaborationId/analytics/runs/$JobId" | Out-Null
-    Write-Host "[DRY-RUN] Would poll run status until COMPLETED/FAILED/SUBMISSION_FAILED."
+    Write-Host "[DRY-RUN] Would poll run status for job $JobId until COMPLETED/FAILED/SUBMISSION_FAILED."
     return
 }
 

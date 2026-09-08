@@ -30,7 +30,7 @@ function Get-FrontendContext {
         [Parameter(Mandatory)]
         [string]$Persona,
 
-        [string]$Frontend = "https://prod.workload-frontendwestus.cleanroom.cloudapp.azure.net",
+        [string]$Frontend,
 
         [string]$ApiVersion = "2026-03-01-preview",
 
@@ -41,6 +41,10 @@ function Get-FrontendContext {
         # and body construction with no allow-listed subscription / live infra.
         [switch]$DryRun
     )
+
+    if (-not $Frontend) {
+        $Frontend = "https://prod.workload-frontendwestus.cleanroom.cloudapp.azure.net"
+    }
 
     # Resolve the bearer token (skipped in dry-run mode).
     $token = $null
@@ -131,7 +135,6 @@ function Resolve-CollaborationId {
     if ($CollaborationId) { return $CollaborationId }
 
     if ($Context.DryRun) {
-        Invoke-Frontend -Context $Context -Path "" -Method GET | Out-Null
         return "<collaboration-id>"
     }
 

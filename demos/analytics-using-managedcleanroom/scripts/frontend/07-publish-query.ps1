@@ -40,11 +40,7 @@ $ErrorActionPreference = "Stop"
 
 if (-not (Test-Path $BodyFile) -and -not $DryRun) { throw "Query body file not found: $BodyFile" }
 
-$ctxParams = @{ Persona = $Persona }
-if ($Frontend) { $ctxParams.Frontend = $Frontend }
-if ($TokenFile) { $ctxParams.TokenFile = $TokenFile }
-if ($DryRun) { $ctxParams.DryRun = $true }
-$fe = Get-FrontendContext @ctxParams
+$fe = Get-FrontendContext -Persona $Persona -Frontend $Frontend -TokenFile $TokenFile -DryRun:$DryRun
 
 $body = if (Test-Path $BodyFile) { Get-Content $BodyFile -Raw } else { '{"_dryRun":true}' }
 Invoke-Frontend -Context $fe -Path "$CollaborationId/analytics/queries/$QueryName/publish" -Method POST -Body $body

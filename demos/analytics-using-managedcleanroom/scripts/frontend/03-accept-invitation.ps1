@@ -34,16 +34,11 @@ param(
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/Invoke-Frontend.ps1"
 
-$ctxParams = @{ Persona = $Persona }
-if ($Frontend) { $ctxParams.Frontend = $Frontend }
-if ($TokenFile) { $ctxParams.TokenFile = $TokenFile }
-if ($DryRun) { $ctxParams.DryRun = $true }
-$fe = Get-FrontendContext @ctxParams
+$fe = Get-FrontendContext -Persona $Persona -Frontend $Frontend -TokenFile $TokenFile -DryRun:$DryRun
 
 # 3.1 Resolve collaboration UUID.
 if (-not $CollaborationId) {
     if ($DryRun) {
-        Invoke-Frontend -Context $fe -Path "" -Method GET | Out-Null
         $CollaborationId = "<collaboration-id>"
     }
     else {
@@ -59,7 +54,6 @@ Write-Host "Collaboration: $CollaborationId"
 # 3.2 Accept invitation.
 if (-not $InvitationId) {
     if ($DryRun) {
-        Invoke-Frontend -Context $fe -Path "$CollaborationId/invitations" -Method GET | Out-Null
         $InvitationId = "<invitation-id>"
     }
     else {

@@ -37,16 +37,16 @@ param(
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/Invoke-Frontend.ps1"
 
-$ctxParams = @{ Persona = $Persona }
-if ($Frontend) { $ctxParams.Frontend = $Frontend }
-if ($TokenFile) { $ctxParams.TokenFile = $TokenFile }
-if ($DryRun) { $ctxParams.DryRun = $true }
-$fe = Get-FrontendContext @ctxParams
+$fe = Get-FrontendContext -Persona $Persona -Frontend $Frontend -TokenFile $TokenFile -DryRun:$DryRun
 
 # Resolve the proposal id from the query.
 $queryInfo = Invoke-Frontend -Context $fe -Path "$CollaborationId/analytics/queries/$QueryName"
 $proposalId = $queryInfo.proposalId
-if (-not $proposalId -and -not $DryRun) { throw "No proposalId found for query '$QueryName'. Is it published?" }
+if (-not $proposalId -and -not $DryRun) {
+    # A missing proposal usually means the query is already decided, not unpublished.
+    Write-Host "Query '$QueryName' has no open proposal (state='$($queryInfo.state)'); nothing to vote on."
+    return
+}
 Write-Host "Proposal ID: $proposalId"
 
 # Vote. (Re-voting is idempotent; a Conflict/'already voted' response is safe.)

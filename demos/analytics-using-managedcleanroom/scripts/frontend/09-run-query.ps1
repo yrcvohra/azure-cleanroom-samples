@@ -41,11 +41,7 @@ param(
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/Invoke-Frontend.ps1"
 
-$ctxParams = @{ Persona = $Persona }
-if ($Frontend) { $ctxParams.Frontend = $Frontend }
-if ($TokenFile) { $ctxParams.TokenFile = $TokenFile }
-if ($DryRun) { $ctxParams.DryRun = $true }
-$fe = Get-FrontendContext @ctxParams
+$fe = Get-FrontendContext -Persona $Persona -Frontend $Frontend -TokenFile $TokenFile -DryRun:$DryRun
 
 $runBody = @{ runId = [guid]::NewGuid().ToString() }
 if ($StartDate) { $runBody.startDate = $StartDate }

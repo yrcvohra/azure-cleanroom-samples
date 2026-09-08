@@ -27,8 +27,6 @@ All paths are relative to `demos/analytics-using-managedcleanroom/`.
 
 ```powershell
 # Deploy collaboration + enable Analytics workload + invite Northwind (one command).
-# The owner is taken from your az login automatically. Add -DeleteExistingCollab
-# to delete and recreate a collaboration that already exists with the same name.
 ./scripts/bicep/deploy-managed-cleanroom.ps1 `
     -resourceGroup cr-collab-rg -collaborationName collab1 `
     -resourceLocation westus `

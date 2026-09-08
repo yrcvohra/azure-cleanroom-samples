@@ -34,7 +34,7 @@
 .PARAMETER additionalCollaborators
     Optional list of extra collaborator identifiers to invite via addCollaborator.
 
-.PARAMETER DeleteExistingCollab
+.PARAMETER deleteExistingCollab
     If a collaboration with the same name exists: when set, delete it (and wait
     for its resources to vanish) before provisioning a new one; when not set,
     skip provisioning and leave the existing collaboration as-is.
@@ -64,11 +64,11 @@ param(
 
     [string[]]$additionalCollaborators = @(),
 
-    [switch]$DeleteExistingCollab,
+    [switch]$deleteExistingCollab,
 
     [string]$apiVersion = "2026-04-30-preview",
 
-    [switch]$DryRun
+    [switch]$dryRun
 )
 
 $ErrorActionPreference = "Stop"
@@ -99,9 +99,9 @@ function Wait-Until {
     }
 }
 
-if ($DryRun) {
+if ($dryRun) {
     Write-Host "[DRY-RUN] Would ensure resource group '$resourceGroup' ($location) and register providers."
-    if ($DeleteExistingCollab) {
+    if ($deleteExistingCollab) {
         Write-Host "[DRY-RUN] Would delete an existing '$collaborationName' (if present) and wait for it to vanish."
     }
     Write-Host "[DRY-RUN] Would deploy Bicep: $PSScriptRoot/managed-cleanroom.bicep (owner from caller token)"
@@ -128,7 +128,7 @@ az provider register --namespace Microsoft.ContainerService -o none
 # ---------------------------------------------------------------------------
 $existing = Get-Collab
 if ($existing -and $existing.id) {
-    if ($DeleteExistingCollab) {
+    if ($deleteExistingCollab) {
         Write-Host "Deleting existing collaboration '$collaborationName'..."
         az rest --method DELETE --url "${collabArmUrl}?api-version=$apiVersion" --resource $armEndpoint -o none
         Wait-Until -Description "existing '$collaborationName' to be deleted" -TimeoutMinutes 30 -Condition { -not (Get-Collab) }
